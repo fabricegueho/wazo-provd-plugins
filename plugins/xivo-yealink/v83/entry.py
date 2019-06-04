@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright 2013-2017 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2013-2019 The Wazo Authors  (see the AUTHORS file)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 import os
 
 common_globals = {}
-execfile_('common.py', common_globals)
+execfile_('common.py', common_globals)  # noqa
 
 MODEL_VERSIONS = {
     u'T19P_E2': u'53.83.0.35',
@@ -39,7 +39,10 @@ MODEL_VERSIONS = {
     u'T48G': u'35.83.0.35',
     u'T48S': u'66.83.0.35',
     u'T52S': u'70.83.0.35',
+    u'T53W': u'70.83.0.35',
+    u'T53': u'70.83.0.35',
     u'T54S': u'70.83.0.35',
+    u'T54W': u'70.83.0.35',
     u'T56A': u'58.83.0.5',
     u'T58': u'58.83.0.5',
     u'W60B': u'77.83.0.10',
@@ -66,6 +69,7 @@ COMMON_FILES_DECT = [
     ('y000000000077.cfg', u'W60B-77.83.0.10.rom', u'W53H-88.83.0.10.rom', u'W56H-61.83.0.10.rom', 'W60P_W53P.tpl'),
 ]
 
+
 class YealinkPlugin(common_globals['BaseYealinkPlugin']):
     IS_PLUGIN = True
 
@@ -83,5 +87,5 @@ class YealinkPlugin(common_globals['BaseYealinkPlugin']):
             raw_config[u'XX_fw_filename'] = fw_filename
             raw_config[u'XX_fw_w53h_handset_filename'] = fw_w53h_handset_filename
             raw_config[u'XX_fw_w56h_handset_filename'] = fw_w56h_handset_filename
-            
+
             self._tpl_helper.dump(tpl, raw_config, dst, self._ENCODING)
