@@ -82,6 +82,13 @@ version: 97.84.0.85
 files: T57W-fw
 install: yealink-fw
 
+[pkg_T58A-fw]
+description: Firmware for Yealink T58A
+description_fr: Micrologiciel pour Yealink T58A
+version: 58.84.0.15
+files: T58A-fw
+install: yealink-fw
+
 
 [install_yealink-fw]
 a-b: cp *.rom firmware/
@@ -158,3 +165,9 @@ filename: T57W-97.84.0.85.rom
 url: http://support.yealink.com/forward2download?path=ZIjHOJbWuW/DFrGTLnGyps5ejdULu/plusSymbolnkOqazt2cMJLXjj56KZn9TplusSymbolTOplusSymbolriJcKLYaeRTZQvWHbUaqCCJHJteMRmcJ5TD6B4GplusSymbolmG27MyplusSymbolu81zpmyzWK3Oeg==
 size: 33489808
 sha1sum: 81cfe9a23b1f04156c713949e4c5b2e85e05f7a3
+
+[file_T58A-fw]
+filename: T58-58.84.0.15.rom
+url: http://support.yealink.com/forward2download?path=ZIjHOJbWuW/DFrGTLnGypjZRKhDplusSymbolXJQ4RnPj7cJgsoI3LiplusSymbolVxvIw3B9y5mwn/Bn89EJXWoqkxlTrBxeMvto8wyaMCddtlikS7kTIplusSymbolVl6AFpf1ffgobzK3Q==
+size: 238208816
+sha1sum: 6b4d9cd5a067672eed3dc30f4d5b2649ad4722a2
