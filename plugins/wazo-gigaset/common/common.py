@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright 2011-2018 The Wazo Authors  (see the AUTHORS file)
-# SPDX-License-Identifier: GPL-3.0+
+# Copyright 2011-2019 The Wazo Authors  (see the AUTHORS file)
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 """Common code shared by the various wazo-gigaset plugins."""
 
@@ -11,12 +11,12 @@ import datetime
 from provd.devices.pgasso import BasePgAssociator, IMPROBABLE_SUPPORT,\
     COMPLETE_SUPPORT, FULL_SUPPORT, UNKNOWN_SUPPORT
 from provd.plugins import StandardPlugin, TemplatePluginHelper, FetchfwPluginHelper
-from provd.util import norm_mac, format_mac, to_ip
+from provd.util import norm_mac, format_mac
 from provd import synchronize
 from provd import plugins
 from provd import tzinform
 from provd.servers.http import HTTPNoListingFileService
-from twisted.internet import defer, threads
+from twisted.internet import defer
 
 logger = logging.getLogger('plugin.wazo-gigaset')
 
@@ -25,20 +25,20 @@ VENDOR = u'Gigaset'
 
 class GigasetDHCPDeviceInfoExtractor(object):
     _VDI = {
-        'N720_DM_PRO':  u'N720 DM PRO',
-        'N510_IP_PRO':  u'N510 IP PRO',
+        'N720_DM_PRO': u'N720 DM PRO',
+        'N510_IP_PRO': u'N510 IP PRO',
     }
-    
+
     def extract(self, request, request_type):
         return defer.succeed(self._do_extract(request))
-    
+
     def _do_extract(self, request):
         options = request[u'options']
         if 60 in options:
             return self._extract_from_vdi(options[60])
         else:
             return None
-    
+
     def _extract_from_vdi(self, vdi):
         # Vendor class identifier:
         #   "Gigaset_N720_DM_PRO"
@@ -51,7 +51,7 @@ class GigasetDHCPDeviceInfoExtractor(object):
             vdi_to_check = '_'.join(vdi_split[1:])
         else:
             vdi_to_check = '_'.join(vdi_split)
-        
+
         if vdi_to_check in self._VDI:
             return {u'vendor': VENDOR,
                     u'model': self._VDI[vdi_to_check]}
@@ -73,7 +73,7 @@ class GigasetHTTPDeviceInfoExtractor(object):
         ua = request.getHeader('User-Agent')
         if ua:
             dev_info.update(self._extract_from_ua(ua))
-           
+
         return dev_info
 
     def _extract_from_ua(self, ua):
@@ -90,14 +90,14 @@ class GigasetHTTPDeviceInfoExtractor(object):
                         u'version': m.group('version').decode('ascii')}
             if 'mac' in m.groupdict():
                 dev_info[u'mac'] = norm_mac(m.group('mac').decode('ascii'))
-        
+
         return dev_info
 
 
 class BaseGigasetPgAssociator(BasePgAssociator):
     def __init__(self, models):
         self._models = models
-    
+
     def _do_associate(self, vendor, model, version):
         if vendor == VENDOR:
             if model in self._models:
@@ -111,7 +111,7 @@ class BaseGigasetPgAssociator(BasePgAssociator):
 
 
 class HTTPServiceWrapper(HTTPNoListingFileService):
-    
+
     def path_preprocess(self, request):
         logger.debug('Complete path: %s', request.path)
         request.path = os.path.normpath(request.path)
@@ -156,25 +156,25 @@ class BaseGigasetPlugin(StandardPlugin):
         (+12, 0): 0x48,
         (+13, 0): 0x50,
     }
-        
+
     def __init__(self, app, plugin_dir, gen_cfg, spec_cfg):
         StandardPlugin.__init__(self, app, plugin_dir, gen_cfg, spec_cfg)
         self._app = app
-        
+
         self._tpl_helper = TemplatePluginHelper(plugin_dir)
         downloaders = FetchfwPluginHelper.new_downloaders(gen_cfg.get('proxies'))
         fetchfw_helper = FetchfwPluginHelper(plugin_dir, downloaders)
 
         self.services = fetchfw_helper.services()
         self.http_service = HTTPServiceWrapper(self._tftpboot_dir)
-        
+
     dhcp_dev_info_extractor = GigasetDHCPDeviceInfoExtractor()
     http_dev_info_extractor = GigasetHTTPDeviceInfoExtractor()
-    
+
     def _check_device(self, device):
         if u'ip' not in device:
             raise Exception('IP address needed for Gigaset configuration')
-    
+
     def _check_config(self, raw_config):
         pass
 
@@ -213,7 +213,7 @@ class BaseGigasetPlugin(StandardPlugin):
             line = raw_config[u'sip_lines'][u'1']
             raw_config[u'sip_proxy_ip'] = line[u'proxy_ip']
             raw_config[u'sip_proxy_port'] = line.get(u'proxy_port', 5060)
-        
+
     def configure(self, device, raw_config):
         self._check_config(raw_config)
         self._check_device(device)
@@ -226,7 +226,7 @@ class BaseGigasetPlugin(StandardPlugin):
 
         path = os.path.join(self._tftpboot_dir, filename)
         self._tpl_helper.dump(tpl, raw_config, path, self._ENCODING)
-    
+
     def deconfigure(self, device):
         path = os.path.join(self._tftpboot_dir, self._dev_specific_filename(device))
         try:
@@ -236,7 +236,7 @@ class BaseGigasetPlugin(StandardPlugin):
 
     def is_sensitive_filename(self, filename):
         return bool(self._SENSITIVE_FILENAME_REGEX.match(filename))
-    
+
     _SENSITIVE_FILENAME_REGEX = re.compile(r'^[0-9A-F]{12}\.xml$')
 
     def synchronize(self, device, raw_config):
